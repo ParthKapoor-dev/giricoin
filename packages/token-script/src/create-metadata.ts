@@ -1,5 +1,5 @@
-import dotenv from "dotenv";
-dotenv.config();
+import { config } from "dotenv";
+config(); // load environment variables from .env
 
 import {
   createCreateMetadataAccountV3Instruction,
@@ -12,38 +12,65 @@ import {
   Transaction,
   sendAndConfirmTransaction,
 } from "@solana/web3.js";
-import * as bs58 from "bs58";
+import bs58 from "bs58";
 import * as fs from "fs";
 
-// Replace with your mint and wallet path
+// Ensure environment variables are set
+if (!process.env.MINT_ADDRESS) {
+  throw new Error("MINT_ADDRESS is not defined in the .env file");
+}
+if (!process.env.URI) {
+  throw new Error("URI is not defined in the .env file");
+}
+if (!process.env.WALLET_PATH) {
+  throw new Error("WALLET_PATH is not defined in the .env file");
+}
+
 const MINT_ADDRESS = new PublicKey(process.env.MINT_ADDRESS);
-const WALLET_KEYPAIR = Keypair.fromSecretKey(
-  bs58.decode(fs.readFileSync("~/.config/solana/id.json", "utf-8"))
+const URI = process.env.URI;
+
+// Load wallet keypair from file; ensure the file contains a base58-encoded private key
+
+const walletKeyData = JSON.parse(
+  fs.readFileSync(process.env.WALLET_PATH, "utf-8"),
 );
-const uri = process.env.URI;
+const WALLET_KEYPAIR = Keypair.fromSecretKey(new Uint8Array(walletKeyData));
 
 async function main() {
-  const connection = new Connection("https://api.devnet.solana.com", "confirmed");
+  // Connect to Solana Devnet
+  const connection = new Connection(
+    "https://api.devnet.solana.com",
+    "confirmed",
+  );
 
+  // Define the metadata for your token
   const metadataData: DataV2 = {
-    name: "Giricoin",
-    symbol: "GIRI",
-    uri,
+    name: "ParthCoin",
+    symbol: "PRTH",
+    uri: URI,
     sellerFeeBasisPoints: 0,
+    // Use undefined if no creators, collection, or uses are provided
     creators: null,
     collection: null,
     uses: null,
   };
 
-  const metadataPDA = PublicKey.findProgramAddressSync(
+  // Metaplex Token Metadata Program ID (keep this as is)
+  const metadataProgramId = new PublicKey(
+    "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s",
+  );
+
+  // Derive the PDA (Program Derived Address) for the metadata account
+  const [metadataPDA] = PublicKey.findProgramAddressSync(
     [
       Buffer.from("metadata"),
-      new PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s").toBuffer(),
+      metadataProgramId.toBuffer(),
       MINT_ADDRESS.toBuffer(),
     ],
-    new PublicKey("metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s")
-  )[0];
+    metadataProgramId,
+  );
 
+  // Create the instruction to create metadata account
   const instruction = createCreateMetadataAccountV3Instruction(
     {
       metadata: metadataPDA,
@@ -58,12 +85,15 @@ async function main() {
         isMutable: true,
         collectionDetails: null,
       },
-    }
+    },
   );
 
+  // Build and send the transaction
   const tx = new Transaction().add(instruction);
-  const txid = await sendAndConfirmTransaction(connection, tx, [WALLET_KEYPAIR]);
-  console.log("✅ Metadata created:", txid);
+  const txid = await sendAndConfirmTransaction(connection, tx, [
+    WALLET_KEYPAIR,
+  ]);
+  console.log("✅ Metadata created successfully. Transaction ID:", txid);
 }
 
 main().catch(console.error);

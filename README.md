@@ -109,7 +109,7 @@ Built with ❤️ for the Solana ecosystem, and a small step toward enabling fou
 
 ## 📸 Preview
 
-![Backpack Demo](https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdmhqbW02NWFtZnVmbHYzM2diMTZjcTBnbGF1eXNzOXd5YzBmZGh1MyZlcD12MV9naWZzX3NlYXJjaCZjdD1n/l0MYB8Ory7Hqefo9a/giphy.gif)
+![Backpack Demo](https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExcmw4aWVnNTYzbXJvNm16bDlsOTJrand4aHdnZHdqbzBmbzM4ZnRwZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/QDK1pCI43lGhO/giphy.gif)
 
 ---
 

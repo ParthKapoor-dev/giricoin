@@ -2,7 +2,7 @@ import { config } from "dotenv";
 config(); // load environment variables from .env
 
 import {
-  createCreateMetadataAccountV3Instruction,
+  createUpdateMetadataAccountV2Instruction,
   DataV2,
 } from "@metaplex-foundation/mpl-token-metadata";
 import {
@@ -71,19 +71,17 @@ async function main() {
   );
 
   // Create the instruction to create metadata account
-  const instruction = createCreateMetadataAccountV3Instruction(
+  const instruction = createUpdateMetadataAccountV2Instruction(
     {
       metadata: metadataPDA,
-      mint: MINT_ADDRESS,
-      mintAuthority: WALLET_KEYPAIR.publicKey,
-      payer: WALLET_KEYPAIR.publicKey,
       updateAuthority: WALLET_KEYPAIR.publicKey,
     },
     {
-      createMetadataAccountArgsV3: {
+      updateMetadataAccountArgsV2: {
         data: metadataData,
+        updateAuthority: WALLET_KEYPAIR.publicKey,
+        primarySaleHappened: null,
         isMutable: true,
-        collectionDetails: null,
       },
     },
   );
@@ -93,7 +91,7 @@ async function main() {
   const txid = await sendAndConfirmTransaction(connection, tx, [
     WALLET_KEYPAIR,
   ]);
-  console.log("✅ Metadata created successfully. Transaction ID:", txid);
+  console.log("✅ Metadata Updated successfully. Transaction ID:", txid);
 }
 
 main().catch(console.error);

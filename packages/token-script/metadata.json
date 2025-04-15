@@ -2,6 +2,6 @@
   "name": "Giricoin",
   "symbol": "GIRI",
   "description": "A Giri Coin.",
-  "image": "https://github.com/parthkapoor-dev/giricoin/blob/main/packages/token-script/loin.jpg",
+  "image": "https://raw.githubusercontent.com/parthkapoor-dev/giricoin/refs/heads/main/packages/token-script/loin.jpg",
   "attributes": []
 }
